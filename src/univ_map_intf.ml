@@ -5,8 +5,7 @@
     stored in. In other words, given different [Key.t]s from the same [string], one will
     not be able to recover the key stored in the other one.
 
-    This is similar to [Univ] in spirit.
-*)
+    This is similar to [Univ] in spirit. *)
 
 open! Base
 
@@ -120,8 +119,7 @@ module type Univ_map = sig
   include S with type 'a data = 'a and module Key := Type_id_key
 
   (** This binding is convenient because existing call sites often refer to
-      [Univ_map.Key.create].
-  *)
+      [Univ_map.Key.create]. *)
   module Key = Type_equal.Id
 
   module Make (Key : Key) (Data : Data) :
@@ -146,7 +144,7 @@ module type Univ_map = sig
           -> 'a Output_data.t option
       }
 
-    (** The analogue of the normal [Map.merge] function.  *)
+    (** The analogue of the normal [Map.merge] function. *)
     val merge
       :  Make(Key)(Input1_data).t
       -> Make(Key)(Input2_data).t
@@ -170,7 +168,7 @@ module type Univ_map = sig
           -> ('s3, 'a) Output_data.t option
       }
 
-    (** The analogue of the normal [Map.merge] function.  *)
+    (** The analogue of the normal [Map.merge] function. *)
     val merge
       :  's1 Make1(Key)(Input1_data).t
       -> 's2 Make1(Key)(Input2_data).t
