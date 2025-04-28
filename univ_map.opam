@@ -17,7 +17,7 @@ depends: [
   "ppx_inline_test"
   "ppx_sexp_message"
   "ppx_sexp_value"
-  "dune"             {>= "3.11.0"}
+  "dune"             {>= "3.17.0"}
 ]
 available: arch != "arm32" & arch != "x86_32"
 synopsis: "Universal/heterogeneous maps, useful for storing values of arbitrary type in a single map."

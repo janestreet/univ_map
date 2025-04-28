@@ -79,7 +79,7 @@ struct
   ;;
 
   let invariant (t : _ t) =
-    Invariant.invariant [%here] t [%sexp_of: _ t] (fun () ->
+    Invariant.invariant t [%sexp_of: _ t] (fun () ->
       Map.iteri t ~f:(fun ~key ~data -> assert (Uid.equal key (Packed.type_id_uid data))))
   ;;
 
