@@ -109,7 +109,7 @@ module type S = sig
   val type_equal : (t, Packed.t Map.M(Type_equal.Id.Uid).t) Type_equal.t
 end
 
-module type Univ_map = sig
+module type Univ_map = sig @@ portable
   module type S = S
   module type S1 = S1
   module type Key = Key
@@ -122,13 +122,13 @@ module type Univ_map = sig
       [Univ_map.Key.create]. *)
   module Key = Type_equal.Id
 
-  module Make (Key : Key) (Data : Data) :
+  module%template.portable Make (Key : Key) (Data : Data) :
     S with type 'a data = 'a Data.t and module Key = Key
 
-  module Make1 (Key : Key) (Data : Data1) :
+  module%template.portable Make1 (Key : Key) (Data : Data1) :
     S1 with type ('s, 'a) data = ('s, 'a) Data.t and module Key = Key
 
-  module Merge
+  module%template.portable Merge
       (Key : Key)
       (Input1_data : Data)
       (Input2_data : Data)
@@ -152,7 +152,7 @@ module type Univ_map = sig
       -> Make(Key)(Output_data).t
   end
 
-  module Merge1
+  module%template.portable Merge1
       (Key : Key)
       (Input1_data : Data1)
       (Input2_data : Data1)
