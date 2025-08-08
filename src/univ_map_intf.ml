@@ -35,6 +35,10 @@ module type S1 = sig
 
   val invariant : _ t -> unit
   val empty : _ t
+
+  (** For obtaining uncontended access to the empty map. *)
+  val get_empty : unit -> _ t
+
   val singleton : 'a Key.t -> ('s, 'a) data -> 's t
   val is_empty : _ t -> bool
   val set : 's t -> key:'a Key.t -> data:('s, 'a) data -> 's t
@@ -78,6 +82,10 @@ module type S = sig
   include Invariant.S with type t := t
 
   val empty : t
+
+  (** For obtaining uncontended access to the empty map. *)
+  val get_empty : unit -> t
+
   val singleton : 'a Key.t -> 'a data -> t
   val is_empty : t -> bool
   val set : t -> key:'a Key.t -> data:'a data -> t
