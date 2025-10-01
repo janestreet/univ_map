@@ -89,6 +89,7 @@ struct
   let remove_by_id t id = Map.remove t id
   let remove t key = remove_by_id t (uid_of_key key)
   let empty = (Map.empty [@mode portable]) (module Uid)
+  let get_empty () = Portability_hacks.magic_uncontended__promise_deeply_immutable empty
 
   let singleton key data =
     Map.singleton (module Uid) (uid_of_key key) (Packed.T (key, data))
@@ -171,6 +172,7 @@ struct
 
   let invariant = M.invariant
   let empty = M.empty
+  let get_empty = M.get_empty
   let singleton = M.singleton
   let is_empty = M.is_empty
   let set = M.set
