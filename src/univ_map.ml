@@ -2,7 +2,7 @@ open! Base
 include Univ_map_intf
 module Uid = Type_equal.Id.Uid
 
-module Make1
+module%template.portable Make1
     (Key : Key)
     (Data : sig
        type ('s, 'a) t [@@deriving sexp_of]
@@ -88,7 +88,8 @@ struct
   let mem t key = mem_by_id t (uid_of_key key)
   let remove_by_id t id = Map.remove t id
   let remove t key = remove_by_id t (uid_of_key key)
-  let empty = Map.empty (module Uid)
+  let empty = (Map.empty [@mode portable]) (module Uid)
+  let get_empty () = Portability_hacks.magic_uncontended__promise_deeply_immutable empty
 
   let singleton key data =
     Map.singleton (module Uid) (uid_of_key key) (Packed.T (key, data))
@@ -149,14 +150,15 @@ struct
   let type_equal : ('s t, 's Packed.t Map.M(Type_equal.Id.Uid).t) Type_equal.t = T
 end
 
-module Make
+module%template.portable
+  [@modality p] Make
     (Key : Key)
     (Data : sig
        type 'a t [@@deriving sexp_of]
      end) =
 struct
   module M =
-    Make1
+    Make1 [@modality p]
       (Key)
       (struct
         type (_, 'a) t = 'a Data.t [@@deriving sexp_of]
@@ -170,6 +172,7 @@ struct
 
   let invariant = M.invariant
   let empty = M.empty
+  let get_empty = M.get_empty
   let singleton = M.singleton
   let is_empty = M.is_empty
   let set = M.set
@@ -198,7 +201,11 @@ struct
   let type_equal : (t, Packed.t Map.M(Type_equal.Id.Uid).t) Type_equal.t = T
 end
 
-module Merge (Key : Key) (Input1_data : Data) (Input2_data : Data) (Output_data : Data) =
+module%template.portable Merge
+    (Key : Key)
+    (Input1_data : Data)
+    (Input2_data : Data)
+    (Output_data : Data) =
 struct
   type f =
     { f :
@@ -231,7 +238,7 @@ struct
   ;;
 end
 
-module Merge1
+module%template.portable Merge1
     (Key : Key)
     (Input1_data : Data1)
     (Input2_data : Data1)
@@ -277,13 +284,18 @@ module Type_id_key = struct
   let type_id = Fn.id
 end
 
-include (
-  Make
+include%template (
+  Make [@modality portable]
     (Type_id_key)
     (struct
       type 'a t = 'a [@@deriving sexp_of]
     end) :
-      S with type 'a data = 'a and module Key := Type_id_key)
+      sig
+      @@ portable
+        include S
+      end
+      with type 'a data = 'a
+       and module Key := Type_id_key)
 
 module Key = Type_equal.Id
 

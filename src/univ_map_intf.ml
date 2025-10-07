@@ -35,6 +35,10 @@ module type S1 = sig
 
   val invariant : _ t -> unit
   val empty : _ t
+
+  (** For obtaining uncontended access to the empty map. *)
+  val get_empty : unit -> _ t
+
   val singleton : 'a Key.t -> ('s, 'a) data -> 's t
   val is_empty : _ t -> bool
   val set : 's t -> key:'a Key.t -> data:('s, 'a) data -> 's t
@@ -78,6 +82,10 @@ module type S = sig
   include Invariant.S with type t := t
 
   val empty : t
+
+  (** For obtaining uncontended access to the empty map. *)
+  val get_empty : unit -> t
+
   val singleton : 'a Key.t -> 'a data -> t
   val is_empty : t -> bool
   val set : t -> key:'a Key.t -> data:'a data -> t
@@ -109,7 +117,7 @@ module type S = sig
   val type_equal : (t, Packed.t Map.M(Type_equal.Id.Uid).t) Type_equal.t
 end
 
-module type Univ_map = sig
+module type Univ_map = sig @@ portable
   module type S = S
   module type S1 = S1
   module type Key = Key
@@ -122,13 +130,13 @@ module type Univ_map = sig
       [Univ_map.Key.create]. *)
   module Key = Type_equal.Id
 
-  module Make (Key : Key) (Data : Data) :
+  module%template.portable Make (Key : Key) (Data : Data) :
     S with type 'a data = 'a Data.t and module Key = Key
 
-  module Make1 (Key : Key) (Data : Data1) :
+  module%template.portable Make1 (Key : Key) (Data : Data1) :
     S1 with type ('s, 'a) data = ('s, 'a) Data.t and module Key = Key
 
-  module Merge
+  module%template.portable Merge
       (Key : Key)
       (Input1_data : Data)
       (Input2_data : Data)
@@ -152,7 +160,7 @@ module type Univ_map = sig
       -> Make(Key)(Output_data).t
   end
 
-  module Merge1
+  module%template.portable Merge1
       (Key : Key)
       (Input1_data : Data1)
       (Input2_data : Data1)
