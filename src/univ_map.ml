@@ -11,7 +11,7 @@ struct
   (* A wrapper for the [Key] module that adds a dynamic check to [Key.type_id].
 
      It's a bug if the user-provided [Key.type_id] gives different type ids on different
-     calls.  Because this check should be fairly cheap, we do it dynamically to avoid
+     calls. Because this check should be fairly cheap, we do it dynamically to avoid
      subtler problems later.
 
      Of course, we're not checking truly pathological things like the provided
