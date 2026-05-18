@@ -68,7 +68,13 @@ module type S1 = sig
   val to_alist : 's t -> 's Packed.t list
   val of_alist_exn : 's Packed.t list -> 's t
   val find_packed_by_id : 's t -> Type_equal.Id.Uid.t -> 's Packed.t option
-  val find_packed_by_id_exn : 's t -> Type_equal.Id.Uid.t -> 's Packed.t
+
+  val find_packed_by_id_exn
+    :  here:[%call_pos]
+    -> 's t
+    -> Type_equal.Id.Uid.t
+    -> 's Packed.t
+
   val type_equal : ('s t, 's Packed.t Map.M(Type_equal.Id.Uid).t) Type_equal.t
 end
 
@@ -113,7 +119,7 @@ module type S = sig
 
   val of_alist_exn : Packed.t list -> t
   val find_packed_by_id : t -> Type_equal.Id.Uid.t -> Packed.t option
-  val find_packed_by_id_exn : t -> Type_equal.Id.Uid.t -> Packed.t
+  val find_packed_by_id_exn : here:[%call_pos] -> t -> Type_equal.Id.Uid.t -> Packed.t
   val type_equal : (t, Packed.t Map.M(Type_equal.Id.Uid).t) Type_equal.t
 end
 

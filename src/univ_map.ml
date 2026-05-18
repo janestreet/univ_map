@@ -146,7 +146,7 @@ struct
   ;;
 
   let find_packed_by_id = Map.find
-  let find_packed_by_id_exn = Map.find_exn
+  let find_packed_by_id_exn ~(here : [%call_pos]) t key = Map.find_exn ~here t key
   let type_equal : ('s t, 's Packed.t Map.M(Type_equal.Id.Uid).t) Type_equal.t = T
 end
 
