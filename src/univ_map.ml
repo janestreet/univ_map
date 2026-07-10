@@ -97,21 +97,27 @@ struct
 
   let is_empty = Map.is_empty
 
-  let find (type b) t (key : b Key.t) =
-    match Map.find t (uid_of_key key) with
-    | None -> None
-    | Some (Packed.T (key', value)) ->
+  let find_or_null (type b) t (key : b Key.t) =
+    match Map.find_or_null t (uid_of_key key) with
+    | Null -> Null
+    | This (Packed.T (key', value)) ->
       (* cannot raise -- see [invariant] *)
       let Type_equal.T =
         Type_equal.Id.same_witness_exn (Key.type_id key) (Key.type_id key')
       in
-      Some (value : (_, b) Data.t)
+      This (value : (_, b) Data.t)
+  ;;
+
+  let find t key =
+    match find_or_null t key with
+    | This data -> Some data
+    | Null -> None
   ;;
 
   let find_exn t key =
-    match find t key with
-    | Some data -> data
-    | None -> Printf.failwithf "Univ_map.find_exn on unknown key %s" (name_of_key key) ()
+    match find_or_null t key with
+    | This data -> data
+    | Null -> Printf.failwithf "Univ_map.find_exn on unknown key %s" (name_of_key key) ()
   ;;
 
   let add t ~key ~data = if mem t key then `Duplicate else `Ok (set t ~key ~data)
